@@ -45,5 +45,5 @@ jobs:
       - name: Upload Installer
         uses: actions/upload-artifact@v4
         with:
-          name: practicaInstaller
+          name: javafx-hello-todo
           path: "*.exe"
