@@ -2,27 +2,48 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "**" ]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [ "**" ]
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up JDK 21
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-        
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
-      with:
-        gradle-version: '8.5'
-        
-    - name: Build with Gradle
-      run: gradle build
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Download JavaFX
+        run: |
+          Invoke-WebRequest -Uri https://download2.gluonhq.com/openjfx/17.0.18/openjfx-17.0.18_windows-x64_bin-sdk.zip -OutFile openjfx.zip
+          Expand-Archive -Path openjfx.zip -DestinationPath javafx-sdk
+
+      - name: Compile Application
+        run: |
+          javac --module-path javafx-sdk/javafx-sdk-17.0.18/lib --add-modules javafx.controls -d build/ src/dam/optativa/HelloWorldFx.java
+
+      - name: Create JAR
+        run: |
+          jar --create --file=build/HelloWorldFx.jar --manifest=manifest/MANIFEST.MF -C build/ .
+
+      - name: Create EXE (JPackage)
+        run: |
+          jpackage --input build/ `
+            --name HelloWorldFx `
+            --main-jar HelloWorldFx.jar `
+            --main-class dam.optativa.HelloWorldFx `
+            --type exe `
+            --module-path javafx-sdk/javafx-sdk-17.0.18/lib `
+            --add-modules javafx.controls
+
+      - name: Upload Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: practicaInstaller
+          path: "*.exe"
