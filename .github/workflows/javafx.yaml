@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*"
+    workflow_dispatch:
 
 permissions:
   contents: write
@@ -57,7 +58,7 @@ jobs:
           path: "HelloWorldFx.exe"
       
       - name: Release
-        uses: softprops/actions-gh-release@v2
+        uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
         with:
           files: "*.exe"
