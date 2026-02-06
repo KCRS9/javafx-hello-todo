@@ -51,13 +51,13 @@ jobs:
           path: "*.exe"
 
       - name: Upload executable
-        uses: softprops/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: helloWordFx - executable
           path: "HelloWorldFx.exe"
       
       - name: Release
-        uses: actions/actions-gh-release@v2
+        uses: softprops/actions-gh-release@v2
         if: github.ref_type == 'tag'
         with:
           files: "*.exe"
