@@ -2,3 +2,4 @@ build/
 javafx-sdk/
 *.dmg
 .gradle/
+.idea/
